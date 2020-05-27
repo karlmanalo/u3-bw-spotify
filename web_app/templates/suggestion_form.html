@@ -1,0 +1,22 @@
+{% extends "bootstrap_layout.html" %}
+{% set active_page = "suggestion_form" %}
+
+{% block content %}
+    <h2>Spotify Song Suggester</h2>
+
+    <p>Use the form below to input an artist and song to output song recommendations.</p>
+
+    <!-- TODO: REDIRECT TO ACTUAL SPOTIFY SEARCH API? -->
+    <form action="/suggest" method="GET">
+
+        <label>Artist Name:</label>
+        <input type="text" name="artist" placeholder="Input artist name here">
+        <br>
+
+        <label>Song Name:</label>
+        <input type="text" name="title" placeholder="Input song name here">
+        <br>
+
+        <button>Submit</button>
+    </form>
+{% endblock %}
