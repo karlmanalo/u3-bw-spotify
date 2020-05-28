@@ -6,12 +6,12 @@ import requests
 from dotenv import load_dotenv
 import os
 
-load_dotenv()
-
-SPOTIFY_AUTHORIZATION = os.getenv("SPOTIFY_SECRET")
 
 suggestion_routes = Blueprint("suggestion_routes", __name__)
 
+load_dotenv()
+
+SPOTIFY_AUTHORIZATION = os.getenv("SPOTIFY_SECRET")
 
 @suggestion_routes.route("/suggest/<artist_name>/<track_name>",
                          methods=["GET"])
