@@ -3,7 +3,12 @@
 from flask import Blueprint, render_template, request
 # from web_app.services.spotify_service import spot
 import requests
+from dotenv import load_dotenv
+import os
 
+load_dotenv()
+
+SPOTIFY_AUTHORIZATION = os.getenv("SPOTIFY_SECRET")
 
 suggestion_routes = Blueprint("suggestion_routes", __name__)
 
@@ -14,7 +19,7 @@ def suggest_songs(artist_name, track_name):
 
     """Gets access token utilizing client credentials"""
     headers = {
-        'Authorization': 'Basic NTU1ODE2ZmFlNjNhNDVmMjlmNTBmOTliYmM4MTM5M2Q6MDA4ZGM0ZThjM2UzNDcwYzk3MzkyYmUwNjg1Nzg1NDA='
+        'Authorization': f"Basic {SPOTIFY_AUTHORIZATION}"
     }
 
     data = {
