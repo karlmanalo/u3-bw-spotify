@@ -1,45 +1,61 @@
 # web_app/routes/suggestion_routes.py
 
 from flask import Blueprint, render_template, request
-from web_app.services.spotify_service import spot
+# from web_app.services.spotify_service import spot
 import requests
 
 
 suggestion_routes = Blueprint("suggestion_routes", __name__)
 
 
-@suggestion_routes.route("/suggest/<artist_name>/<track_name>", methods=["GET"])
+@suggestion_routes.route("/suggest/<artist_name>/<track_name>",
+                         methods=["GET"])
 def suggest_songs(artist_name, track_name):
 
-    artist_name = artist_name  # TODO: ENCODE SPACES? str.replace(" ", "%20")?
-    track_name = track_name  # TODO: ENCODE SPACES? str.replace(" ", "%20")?
-    print(artist_name)
-    print(track_name)
+    """Gets access token utilizing client credentials"""
+    headers = {
+        'Authorization': 'Basic NTU1ODE2ZmFlNjNhNDVmMjlmNTBmOTliYmM4MTM5M2Q6MDA4ZGM0ZThjM2UzNDcwYzk3MzkyYmUwNjg1Nzg1NDA='
+    }
+
+    data = {
+        'grant_type': 'client_credentials'
+    }
+
+    response = requests.post('https://accounts.spotify.com/api/token',
+                             headers=headers,
+                             data=data)
+
+    access_token = response.json()['access_token']
+
+    artist_name = artist_name
+    track_name = track_name
+    # artist_name = request.form["artist"]
+    # track_name = request.form["title"]
 
     user_query = artist_name + ' ' + track_name
-    
+
     headers = {
         'Accept': 'application/json',
         'Content-Type': 'application/json',
-        'Authorization': 'Bearer BQCzLNEJZst0KzIJSmiKHFqFtlCWoO8NBo9DJwD7HgKuOxTuwZCqUWx2_TOUYn0uqzAFPLP-TUX49YBgyIEZUucFBEtabumCn4ukykdgjwJwCzapKHCUvlVEWQWELfEYOLLP1WY1XLlh_BsfglV_9m0',
+        'Authorization': f"Bearer {access_token}",
     }
 
     params = (
-        ('q', user_query), #  TODO: replace second item in tuple with user_query
+        ('q', user_query),
         ('type', 'track,artist'),
     )
 
-    song_info = requests.get('https://api.spotify.com/v1/search', headers=headers, params=params)
+    song_info = requests.get('https://api.spotify.com/v1/search',
+                             headers=headers,
+                             params=params)
 
-    breakpoint()
-    # breakpoint()
-    # song_info = spot.search(q=f'artist:{artist_name} track:{track_name}')
+    track_id = song_info.json()['tracks']['items'][0]['id']  # TODO: remove .json() depending output of Erick's code
 
-    track_id = song_info.json()['tracks']['items'][0]['id']
+    print(track_id)
 
     # TODO: INCORPORATE PICKLED MODEL HERE. EXPECTED INPUT SONG ID?, EXPECTED
     # OUTPUT 10 RECOMMENDED SONGS
     return render_template("suggestion_results.html",
-                           title=track_name, #  TODO: replace with track_name
-                           artist=artist_name #  TODO: replace with artist_name AND output model's results
+                           title=track_name,
+                           artist=artist_name  # TODO: replace with model's results
                            )
